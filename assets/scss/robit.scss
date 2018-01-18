@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+$blue : #64B5F6;
+$light-grey : #FAFAFA;
+$dark-grey : #E0E0E0;
+$darkBlue : #2196F3;
+$purple : #673AB7;
+$amber : #FFC107;
+$indigo : #C5CAE9;
+$tooltip-color: rgba(0,0,0,0.9);
+
+.move-button {
+  border: 0;
+  border-radius: 5px;
+  width: 100px;
+  height: 30px;
+  color: $amber;
+  outline: none;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background-color 500ms;
+  background-color: $darkBlue;
+  &:hover {    
+    background-color: $blue;
+  }
+  &:disabled {
+    background-color: $indigo;
+    cursor: auto;
+  }
+}
+
+.chevron {
+  width: 10px;
+  height: 10px;
+  border-bottom: solid 5px white;
+  border-right: solid 5px white;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 50%;
+  margin-left: 5%;
+}
+
+.left.chevron {
+  transform: rotate(135deg);
+}
+
+.right.chevron {
+  transform: rotate(315deg);
+}
