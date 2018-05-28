@@ -1,2 +1,2 @@
 #!/bin/bash
-sass ../assets/scss/robit.scss:../assets/css/robit.css --style compressed
+sass ../assets/scss/sticker.scss:../assets/css/sticker.css --style compressed
