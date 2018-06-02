@@ -1,3 +1,3 @@
 #!/bin/bash
 
-GOARCH=arm GOARM=7 GOOS=linux go build ../
+GOARCH=arm GOARM=7 GOOS=linux go build -o ../runServer ../
