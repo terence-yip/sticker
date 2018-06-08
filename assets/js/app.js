@@ -132,7 +132,7 @@ lookdownButton.addEventListener("touchend", function() {
 });
 
 var timeoutPeriod = 500;
-var imageURI = '/image.jpg';
+var imageURI = 'images/image.jpg';
 var img = new Image();
 img.onload = function() {
     var canvas = document.getElementById("current-frame");

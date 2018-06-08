@@ -206,6 +206,7 @@ func RunServer(robot *Robot) {
 	http.HandleFunc("/", home_page())
 	http.Handle("/css/", http.FileServer(http.Dir("assets/")))
 	http.Handle("/js/", http.FileServer(http.Dir("assets/")))
+	http.Handle("/images/", http.FileServer(http.Dir("assets/")))
 	http.HandleFunc("/api", robot_api(robot))
 	http.HandleFunc("/login", login_api())
 	http.HandleFunc("/logout", logout_api())
