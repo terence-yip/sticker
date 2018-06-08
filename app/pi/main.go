@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./sticker"
+	"../../sticker"
 )
 
 func main() {

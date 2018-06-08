@@ -1,4 +1,2 @@
-*.scssc
-assets/css/sticker.css
-*.css.map
-runServer
+static/generated
+staging

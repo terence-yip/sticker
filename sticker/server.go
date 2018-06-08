@@ -42,7 +42,7 @@ func displayControlPage(w http.ResponseWriter) {
 	w.Write([]byte(`
 <html>
 <head>
-    <link href='/css/sticker.css' rel='stylesheet'>
+    <link href='/static/sticker.css' rel='stylesheet'>
 </head>
 <body>
   <h1>Sticker</h1>
@@ -61,7 +61,7 @@ func displayControlPage(w http.ResponseWriter) {
       <div class="look-button" id="look-down">Down</div>
   </div>
   <canvas id="current-frame" width="400" height="300" />
-  <script src="/js/app.js"></script>
+  <script src="/static/app.js"></script>
 </body>
 </html>
 `))
@@ -72,7 +72,7 @@ func displayLoginPage(w http.ResponseWriter) {
 	w.Write([]byte(`
 <html>
 <head>
-    <link href='/css/sticker.css' rel='stylesheet'>
+    <link href='/static/sticker.css' rel='stylesheet'>
 </head>
 <body>
   <h1>Login</h1>
@@ -85,7 +85,7 @@ func displayLoginPage(w http.ResponseWriter) {
     	<button type="submit" value="Login">Login</button>
   	</form>
   </div>
-  <script src="/js/login.js"></script>
+  <script src="/static/login.js"></script>
 </body>
 </html>
 `))
@@ -204,9 +204,8 @@ func updateServoMode(m RobotMessage, robot *Robot) {
 
 func RunServer(robot *Robot) {
 	http.HandleFunc("/", homePage())
-	http.Handle("/css/", http.FileServer(http.Dir("assets/")))
-	http.Handle("/js/", http.FileServer(http.Dir("assets/")))
-	http.Handle("/images/", http.FileServer(http.Dir("assets/")))
+	http.Handle("/static/", http.FileServer(http.Dir("./")))
+	http.Handle("/images/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/api", robotApi(robot))
 	http.HandleFunc("/login", loginApi())
 	http.HandleFunc("/logout", logoutApi())

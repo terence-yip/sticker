@@ -175,7 +175,7 @@ func decreaseServo(robot *Robot, sType ServoType) {
 }
 
 func startImageCapture() {
-	cmd := exec.Command("raspistill", "-o", "assets/images/image.jpg", "-w", "400", "-h", "300", "-tl", "500", "-t", "0")
+	cmd := exec.Command("raspistill", "-o", "images/image.jpg", "-w", "400", "-h", "300", "-tl", "500", "-t", "0")
 	err := cmd.Start()
 	if err != nil {
 		fmt.Printf("Error:  %v", err)
