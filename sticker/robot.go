@@ -13,6 +13,10 @@ const (
 	LEFT_MOTOR  = 0
 	RIGHT_MOTOR = 1
 
+	MOTOR_HAT_ADDRESS = 0x60
+	MOTOR_SPEED       = 100
+
+	SERVO_HAT_ADDRESS                = 0x40
 	SERVO_LOWER_ANGLE_BOUND          = -90.0
 	SERVO_UPPER_ANGLE_BOUND          = 90.0
 	SERVO_ANGLE_RANGE                = SERVO_UPPER_ANGLE_BOUND - SERVO_LOWER_ANGLE_BOUND
@@ -62,17 +66,18 @@ func NewRobot() *Robot {
 		},
 	}
 
-	robot.motorServoDriver.SetMotorHatAddress(0x60)
-	robot.motorServoDriver.Start()
-	robot.motorServoDriver.SetDCMotorSpeed(LEFT_MOTOR, 100)
-	robot.motorServoDriver.SetDCMotorSpeed(RIGHT_MOTOR, 100)
-	robot.motorServoDriver.SetServoHatAddress(0x40)
-	robot.motorServoDriver.SetServoMotorFreq(SERVO_FREQUENCY_HZ)
-
-	go update_servo(&robot)
-	start_image_capture()
-
+	robot.motorServoDriver.SetMotorHatAddress(MOTOR_HAT_ADDRESS)
+	robot.motorServoDriver.SetServoHatAddress(SERVO_HAT_ADDRESS)
 	return &robot
+}
+
+func (r Robot) Start() {
+	r.motorServoDriver.Start()
+	r.motorServoDriver.SetDCMotorSpeed(LEFT_MOTOR, MOTOR_SPEED)
+	r.motorServoDriver.SetDCMotorSpeed(RIGHT_MOTOR, MOTOR_SPEED)
+	r.motorServoDriver.SetServoMotorFreq(SERVO_FREQUENCY_HZ)
+	go updateServo(&r)
+	startImageCapture()
 }
 
 func (r Robot) turnLeft() {
@@ -101,75 +106,75 @@ func (r Robot) stopMove() {
 }
 
 func (r Robot) lookUp() {
-	r.set_servo(Elevation, Increase)
+	r.setServo(Elevation, Increase)
 }
 
 func (r Robot) lookDown() {
-	r.set_servo(Elevation, Decrease)
+	r.setServo(Elevation, Decrease)
 }
 
 func (r Robot) lookLeft() {
-	r.set_servo(Azimuth, Increase)
+	r.setServo(Azimuth, Increase)
 }
 
 func (r Robot) lookRight() {
-	r.set_servo(Azimuth, Decrease)
+	r.setServo(Azimuth, Decrease)
 }
 
 func (r Robot) stopLook() {
-	r.set_servo(Azimuth, Release)
-	r.set_servo(Elevation, Release)
+	r.setServo(Azimuth, Release)
+	r.setServo(Elevation, Release)
 }
 
-func (r Robot) set_servo(stype ServoType, smode ServoMode) {
+func (r Robot) setServo(stype ServoType, smode ServoMode) {
 	r.servoModes[stype] = smode
 }
 
-func angle_to_counts(angle float64) int32 {
+func angleToCounts(angle float64) int32 {
 	angleRatio := (angle - SERVO_LOWER_ANGLE_BOUND) / SERVO_ANGLE_RANGE
-	period_ms := SERVO_PULSE_WIDTH_RANGE*angleRatio + SERVO_LOWER_ANGLE_PULSE_WIDTH_MS
-	counts := period_ms / PERIOD_PER_COUNT_MS
+	periodMs := SERVO_PULSE_WIDTH_RANGE*angleRatio + SERVO_LOWER_ANGLE_PULSE_WIDTH_MS
+	counts := periodMs / PERIOD_PER_COUNT_MS
 	return int32(math.Floor(counts))
 }
 
-func update_servo_angles(robot *Robot) {
-	azimuthCounts := angle_to_counts(robot.servoAngle[Azimuth])
+func updateServoAngles(robot *Robot) {
+	azimuthCounts := angleToCounts(robot.servoAngle[Azimuth])
 	robot.motorServoDriver.SetServoMotorPulse(byte(Azimuth), 0, azimuthCounts)
-	elevationCounts := angle_to_counts(robot.servoAngle[Elevation])
+	elevationCounts := angleToCounts(robot.servoAngle[Elevation])
 	robot.motorServoDriver.SetServoMotorPulse(byte(Elevation), 0, elevationCounts)
 }
 
-func update_servo(robot *Robot) {
+func updateServo(robot *Robot) {
 	for {
 		switch robot.servoModes[Azimuth] {
 		case Increase:
-			increase_servo(robot, Azimuth)
+			increaseServo(robot, Azimuth)
 		case Decrease:
-			decrease_servo(robot, Azimuth)
+			decreaseServo(robot, Azimuth)
 		}
 
 		switch robot.servoModes[Elevation] {
 		case Increase:
-			decrease_servo(robot, Elevation)
+			decreaseServo(robot, Elevation)
 		case Decrease:
-			increase_servo(robot, Elevation)
+			increaseServo(robot, Elevation)
 		}
-		update_servo_angles(robot)
+		updateServoAngles(robot)
 		time.Sleep(20 * time.Millisecond)
 	}
 }
 
-func increase_servo(robot *Robot, sType ServoType) {
+func increaseServo(robot *Robot, sType ServoType) {
 	robot.servoAngle[sType] = math.Min(
 		robot.servoAngle[sType]+SERVO_INCREMENT, SERVO_UPPER_ANGLE_BOUND)
 }
 
-func decrease_servo(robot *Robot, sType ServoType) {
+func decreaseServo(robot *Robot, sType ServoType) {
 	robot.servoAngle[sType] = math.Max(
 		robot.servoAngle[sType]-SERVO_INCREMENT, SERVO_LOWER_ANGLE_BOUND)
 }
 
-func start_image_capture() {
+func startImageCapture() {
 	cmd := exec.Command("raspistill", "-o", "assets/images/image.jpg", "-w", "400", "-h", "300", "-tl", "500", "-t", "0")
 	err := cmd.Start()
 	if err != nil {

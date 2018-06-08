@@ -18,17 +18,17 @@ type LoginMessage struct {
 	Password string
 }
 
-func home_page() func(w http.ResponseWriter, r *http.Request) {
+func homePage() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if logged_in(r) {
-			display_control_page(w)
+		if loggedIn(r) {
+			displayControlPage(w)
 		} else {
-			display_login_page(w)
+			displayLoginPage(w)
 		}
 	}
 }
 
-func logged_in(r *http.Request) bool {
+func loggedIn(r *http.Request) bool {
 	cookie, err := r.Cookie("session")
 	if err == nil {
 		// err = bcrypt.CompareHashAndPassword([]byte("world"))
@@ -37,7 +37,7 @@ func logged_in(r *http.Request) bool {
 	return false
 }
 
-func display_control_page(w http.ResponseWriter) {
+func displayControlPage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusFound)
 	w.Write([]byte(`
 <html>
@@ -67,7 +67,7 @@ func display_control_page(w http.ResponseWriter) {
 `))
 }
 
-func display_login_page(w http.ResponseWriter) {
+func displayLoginPage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusFound)
 	w.Write([]byte(`
 <html>
@@ -91,7 +91,7 @@ func display_login_page(w http.ResponseWriter) {
 `))
 }
 
-func robot_api(robot *Robot) func(w http.ResponseWriter, r *http.Request) {
+func robotApi(robot *Robot) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var m RobotMessage
@@ -99,12 +99,12 @@ func robot_api(robot *Robot) func(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		} else {
-			update_robot(m, robot)
+			updateRobot(m, robot)
 		}
 	}
 }
 
-func login_api() func(w http.ResponseWriter, r *http.Request) {
+func loginApi() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		login(r.Form["username"][0], r.Form["password"][0], w)
@@ -114,7 +114,7 @@ func login_api() func(w http.ResponseWriter, r *http.Request) {
 
 func login(username string, password string, w http.ResponseWriter) {
 	if username == "hello" && password == "world" {
-		cookie, err := session_cookie(username, password)
+		cookie, err := sessionCookie(username, password)
 		if err == nil {
 			http.SetCookie(w, cookie)
 		} else {
@@ -123,10 +123,10 @@ func login(username string, password string, w http.ResponseWriter) {
 	}
 }
 
-func session_cookie(username string, password string) (*http.Cookie, error) {
+func sessionCookie(username string, password string) (*http.Cookie, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		return empty_cookie(), err
+		return emptyCookie(), err
 	}
 	cookie := &http.Cookie{
 		Name:  "session",
@@ -136,7 +136,7 @@ func session_cookie(username string, password string) (*http.Cookie, error) {
 	return cookie, nil
 }
 
-func empty_cookie() *http.Cookie {
+func emptyCookie() *http.Cookie {
 	cookie := &http.Cookie{
 		Name:  "session",
 		Value: "",
@@ -145,7 +145,7 @@ func empty_cookie() *http.Cookie {
 	return cookie
 }
 
-func logout_api() func(w http.ResponseWriter, r *http.Request) {
+func logoutApi() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logout(w)
 	}
@@ -155,16 +155,16 @@ func logout(w http.ResponseWriter) {
 
 }
 
-func update_robot(m RobotMessage, robot *Robot) {
+func updateRobot(m RobotMessage, robot *Robot) {
 	switch m.Command {
 	case "move":
-		update_motor(m, robot)
+		updateMotor(m, robot)
 	case "look":
-		update_servo_mode(m, robot)
+		updateServoMode(m, robot)
 	}
 }
 
-func update_motor(m RobotMessage, robot *Robot) {
+func updateMotor(m RobotMessage, robot *Robot) {
 	if m.Pressed == "true" {
 		switch m.Direction {
 		case "left":
@@ -183,7 +183,7 @@ func update_motor(m RobotMessage, robot *Robot) {
 	}
 }
 
-func update_servo_mode(m RobotMessage, robot *Robot) {
+func updateServoMode(m RobotMessage, robot *Robot) {
 	if m.Pressed == "true" {
 		switch m.Direction {
 		case "left":
@@ -203,13 +203,13 @@ func update_servo_mode(m RobotMessage, robot *Robot) {
 }
 
 func RunServer(robot *Robot) {
-	http.HandleFunc("/", home_page())
+	http.HandleFunc("/", homePage())
 	http.Handle("/css/", http.FileServer(http.Dir("assets/")))
 	http.Handle("/js/", http.FileServer(http.Dir("assets/")))
 	http.Handle("/images/", http.FileServer(http.Dir("assets/")))
-	http.HandleFunc("/api", robot_api(robot))
-	http.HandleFunc("/login", login_api())
-	http.HandleFunc("/logout", logout_api())
+	http.HandleFunc("/api", robotApi(robot))
+	http.HandleFunc("/login", loginApi())
+	http.HandleFunc("/logout", logoutApi())
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Printf("ListenAndServe: %v", err)
