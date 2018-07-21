@@ -46,21 +46,50 @@ func displayControlPage(w http.ResponseWriter) {
 </head>
 <body>
   <h1>Sticker</h1>
-  <h2>Movement</h2>
-  <div>
-      <div class="move-button" id="move-left">Left</div>
-      <div class="move-button" id="move-right">Right</div>
-      <div class="move-button" id="move-up">Up</div>
-      <div class="move-button" id="move-down">Down</div>
+  <div class="dashboard">
+
+  <div class="control-panel" id="move-panel">
+	  <div><h2>Movement</h2></div>
+	  <div class="movement-controls">
+	  	<div class="up direction-button" id="move-up">
+	      <div class="arrow"></div>
+  	  	</div>
+	  	<div class="left direction-button" id="move-left">
+      	  <div class="arrow"></div>
+  	  	</div>
+	  	<div class="right direction-button" id="move-right">
+	      <div class="arrow"></div>
+  	  	</div>
+	  	<div class="down direction-button" id="move-down">
+	      <div class="arrow"></div>
+	    </div>
+	  </div>
   </div>
-  <h2>Camera</h2>
-  <div>
-      <div class="look-button" id="look-left">Left</div>
-      <div class="look-button" id="look-right">Right</div>
-      <div class="look-button" id="look-up">Up</div>
-      <div class="look-button" id="look-down">Down</div>
+
+  <div class="camera-view">
+  	<canvas id="current-frame" width="400" height="300" />
   </div>
-  <canvas id="current-frame" width="400" height="300" />
+
+  <div class="control-panel" id="camera-panel">
+  	<h2>Camera</h2>
+	<div class="movement-controls">
+	  	<div class="up direction-button" id="look-up">
+	  		<div class="arrow"></div>
+  	  	</div>
+	  	<div class="left direction-button" id="look-left">
+	  		<div class="arrow"></div>
+  	  	</div>
+	  	<div class="right direction-button" id="look-right">
+	  		<div class="arrow"></div>
+  	  	</div>
+	  	<div class="down direction-button" id="look-down">
+	  		<div class="arrow"></div>
+  		</div>
+	</div>
+  </div>
+
+  </div>
+
   <script src="/static/app.js"></script>
 </body>
 </html>
