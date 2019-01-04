@@ -1,14 +1,18 @@
-FROM debian:stretch-20181112-slim
+FROM resin/rpi-raspbian:stretch
 RUN apt-get update
 RUN apt-get install -y \
   sass \
   golang \
-  git
+  git \
+  libraspberrypi-bin \
+  python3 \
+  python3-dev \
+  python3-pip \
+  libatlas-base-dev \
+  libopenjp2-7-dev \
+  libjpeg-dev \
+  libfreetype6-dev \
+  libtiff5-dev \
+  protobuf-compiler
 
-#ENV GOPATH /app/gopath
-#RUN mkdir -p $GOPATH
-#RUN go get -d -u gobot.io/x/gobot/...
- 
-#RUN cd /app/sticker/scripts && ./generateCss.sh
-#RUN cd /app/sticker/scripts && ./buildApp.sh
-#RUN cd /app/sticker/staging && ./app
+RUN pip3 install --no-cache-dir --default-timeout=1000 tensorflow pillow matplotlib
