@@ -15,4 +15,7 @@ RUN apt-get install -y \
   libtiff5-dev \
   protobuf-compiler
 
-RUN pip3 install --no-cache-dir --default-timeout=1000 tensorflow pillow matplotlib
+RUN pip3 install --no-cache-dir --default-timeout=1000 tensorflow
+RUN pip3 install pillow
+RUN pip3 install matplotlib
+

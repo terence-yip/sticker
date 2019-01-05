@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import PIL
 
 import matplotlib as mpl
 from object_detection.utils import label_map_util
@@ -17,13 +16,6 @@ def load_model(model_path):
             od_graph_def.ParseFromString(serialized_graph)
             tf.import_graph_def(od_graph_def, name='')
     return detection_graph
-
-def load_image_into_numpy_array(image_path, max_size):
-    image = PIL.Image.open(image_path)
-    image.thumbnail(max_size)
-    (im_width, im_height) = image.size
-    return np.array(image.getdata()).reshape(
-        (im_height, im_width, 3)).astype(np.uint8)
 
 def run_inference(image, graph):
     with graph.as_default():
