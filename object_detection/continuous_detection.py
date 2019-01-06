@@ -11,7 +11,7 @@ import time
 def main(duration):
     stream = io.BytesIO()
     camera = picamera.PiCamera()
-    camera.resolution = (1024, 768)
+    camera.resolution = (400, 300)
 
     IMAGE_DIR = "/host/sticker/staging/images/"
     FILENAME = "image.jpg"
@@ -23,13 +23,15 @@ def main(duration):
         camera.capture(stream, format='jpeg')
         stream.seek(0)
         image = Image.open(stream)
-        stream.seek(0)
         t1 = time.time()
         op = od.detect(image)
         op.save(OUTPUT_IMAGE)
+        #image.save(OUTPUT_IMAGE)
         t2 = time.time()
         tdiff = t2 - t1
         print(str(tdiff) + " - Wrote to " + OUTPUT_IMAGE)
+        stream.seek(0)
+        stream.truncate()
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser("Auto picture + image detection")
